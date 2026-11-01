@@ -7,34 +7,43 @@ const Button = (props) => (
   </button>
 )
 
-// palautetaan teksti ja arvo
-const StatisticsLine = (props) => {
+// palautetaan teksti ja arvo taulukkona
+const StatisticsLine = ({text, value}) => {
   return (
-    <p>{props.text} {props.value}</p>
-  )
+    <tr>
+      <td>
+        {text}
+      </td>
+      <td>
+        {value}
+      </td>
+    </tr>
+    )
 }
 
-// lasketaan ja palautetaan muuttujat
-const Statistics = (props) => {
-  const all = props.good + props.neutral + props.bad
+// lasketaan ja palautetaan muuttujat taulukkona
+const Statistics = ({good, neutral, bad}) => {
+  const all = good + neutral + bad
   if (all === 0) {
     return (
     <div>No feedback given</div>
     )
   }
   else {
-    const average = (props.good * 1 + props.bad * -1) / all
-    const positive = (props.good / all) * 100 + ' %'
+    const average = (good * 1 + bad * -1) / all
+    const positive = (good / all) * 100 + ' %'
   
   return (
-    <div>
-      <StatisticsLine text="good" value={props.good}/>
-      <StatisticsLine text="neutral" value={props.neutral}/>
-      <StatisticsLine text="bad" value={props.bad}/>
-      <StatisticsLine text="all" value={all}/>
-      <StatisticsLine text="average" value={average}/>
-      <StatisticsLine text="positive" value={positive}/>
-    </div>
+    <table>
+      <tbody>
+        <StatisticsLine text="good" value={good}/>
+        <StatisticsLine text="neutral" value={neutral}/>
+        <StatisticsLine text="bad" value={bad}/>
+        <StatisticsLine text="all" value={all}/>
+        <StatisticsLine text="average" value={average}/>
+        <StatisticsLine text="positive" value={positive}/>
+      </tbody>
+    </table>
   )
  }
 }
