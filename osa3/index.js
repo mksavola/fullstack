@@ -1,7 +1,22 @@
+const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
 app.use(express.json())
+
+// morgan-tokenin määrittely POST-pyynnön näyttämiseen
+morgan.token('body', request => {
+    if (request.method === 'POST') {
+            return JSON.stringify(request.body)
+
+    }
+    else {
+        return ('')
+    }
+})
+
+// morgan-lokituksen määrittely
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let numbers = [
     {
