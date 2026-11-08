@@ -74,6 +74,11 @@ const App = () => {
         setNewNumber('')
         console.log(returnedPerson)
     })
+    .catch(error => {
+      setNotification({message: error.response.data.error, type: 'error'})
+      setTimeout(() => {setNotification(null)}, 5000)
+      console.log(error.response.data)
+    })
   }
 
   // numeron poisto

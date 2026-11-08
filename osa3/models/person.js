@@ -16,9 +16,16 @@ mongoose.connect(url, { family: 4 })
 
 // skeeman määrittely
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String
-
+  name: {
+    type: String,
+    minlength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minlength: 3,
+    require: true
+  }
 })
 
 // id:n muokkaus oliosta merkkijonoksi

@@ -70,7 +70,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 
 // Numeron lisäys
-app.post('/api/persons', (request, response, nedxt) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   // virheen käsittely nimen ja numeron puuttumiselle
@@ -120,13 +120,17 @@ const unknownEndpoint = (request, response) => {
 // olemattomien osoitteiden käsittely
 app.use(unknownEndpoint)
 
+// virheidenkäsittely
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
+  console.log(error.name)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   }
-
+  else if (error.name === 'ValidationError') {
+    return response.status(400).json({error: error.message})
+  }
   next(error)
 }
 
