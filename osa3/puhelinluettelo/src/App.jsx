@@ -54,11 +54,14 @@ const App = () => {
           setNewNumber('')
         })
         .catch(error => {
-        setNotification({message: `Information of ${existingPerson.name} has already been removed from server`, type:'error'})
-        setTimeout(() => {setNotification(null)}, 5000)
-        setPersons(persons.filter(p => p.id !== existingPerson.id))
-        console.log(error)
-      })
+          if (error.response.data && error.response.data.error) {
+            setNotification({ message: error.response.data.error, type: 'error' })
+          } else {  
+            setNotification({ message: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
+          }
+          setTimeout(() => { setNotification(null) }, 5000)
+        })
       }
       return
     }

@@ -14,7 +14,7 @@ mongoose.connect(url, { family: 4 })
     console.log('error connecting to MongoDB:', error.message)
   })
 
-// skeeman määrittely
+// skeeman määrittely ja validointi
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -23,8 +23,14 @@ const personSchema = new mongoose.Schema({
   },
   number: {
     type: String,
-    minlength: 3,
-    require: true
+    validate: {
+        validator: function(v) {
+            return /^\d{2,3}-\d+$/.test(v)
+        },
+        message: props => `${props.value} is not a valid phone number!`
+    },
+    required: [true, 'User phone number required'],
+    minlength: 8
   }
 })
 
