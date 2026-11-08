@@ -1,12 +1,12 @@
 const morgan = require('morgan')
 const express = require('express')
-const app = express()
 const cors = require('cors')
+const app = express()
 
-
+// middleware määrittelyt
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(cors())
-
 
 // morgan-tokenin määrittely POST-pyynnön näyttämiseen
 morgan.token('body', request => {
