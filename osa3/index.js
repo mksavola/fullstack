@@ -1,6 +1,9 @@
+require('dotenv').config()
 const morgan = require('morgan')
 const express = require('express')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Person = require('./models/person')
 const app = express()
 
 // middleware määrittelyt
@@ -52,7 +55,10 @@ let numbers = [
 
 // Puhelinluettelon haku
 app.get('/api/persons', (request, response) => {
-  response.json(numbers)
+    Person.find({}).then(numbers => {
+          response.json(numbers)
+
+    })
 })
 
 // Puhelinluettelon koko ja päivämäärä
@@ -108,13 +114,16 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const person = {
-    id: generateId(),
+  // uuden olion luonti
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
-  numbers = numbers.concat(person)
-  response.json(person)
+  })
+
+  // olion tallennus tietokantaan ja tuloksen palautus selaimelle
+  person.save().then(savedPerson => {
+  response.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT || 3001
