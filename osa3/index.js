@@ -2,7 +2,6 @@ require('dotenv').config()
 const morgan = require('morgan')
 const express = require('express')
 const cors = require('cors')
-const mongoose = require('mongoose')
 const Person = require('./models/person')
 const app = express()
 
@@ -13,13 +12,13 @@ app.use(cors())
 
 // morgan-tokenin määrittely POST-pyynnön näyttämiseen
 morgan.token('body', request => {
-    if (request.method === 'POST') {
-            return JSON.stringify(request.body)
+  if (request.method === 'POST') {
+    return JSON.stringify(request.body)
 
-    }
-    else {
-        return ('')
-    }
+  }
+  else {
+    return ('')
+  }
 })
 
 // morgan-lokituksen määrittely
@@ -27,28 +26,28 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 // Puhelinluettelon haku
 app.get('/api/persons', (request, response, next) => {
-    Person.find({}).then(numbers => {
-      response.json(numbers)
-    })
+  Person.find({}).then(numbers => {
+    response.json(numbers)
+  })
     .catch(error => next(error))
 })
 
 // Puhelinluettelon koko ja päivämäärä
 app.get('/info', (request, response, next) => {
-    Person.find({}).then(numbers => {
-      const size = numbers.length
-      const date = new Date()
-      response.send(`
+  Person.find({}).then(numbers => {
+    const size = numbers.length
+    const date = new Date()
+    response.send(`
         <p>Phonebook has info for ${size} people</p>
         <p>${date}</p>
       `)
-    })
+  })
     .catch(error => next(error))
 })
 
 // Yksittäisen numeron haku
 app.get('/api/persons/:id', (request, response,next) => {
-    Person.findById(request.params.id)
+  Person.findById(request.params.id)
     .then(person => {
       if (person) {
         response.json(person)
@@ -61,9 +60,9 @@ app.get('/api/persons/:id', (request, response,next) => {
 
 // Numeron poisto
 app.delete('/api/persons/:id', (request, response, next) => {
-    Person.findByIdAndDelete(request.params.id)
-    .then(result => {
-        response.status(204).end()
+  Person.findByIdAndDelete(request.params.id)
+    .then(() => {
+      response.status(204).end()
     })
     .catch(error => next(error))
 })
@@ -76,7 +75,7 @@ app.post('/api/persons', (request, response, next) => {
   // virheen käsittely nimen ja numeron puuttumiselle
   if (!body.name || !body.number) {
     return response.status(400).json({
-        error: 'name or number is missing'
+      error: 'name or number is missing'
     })
   }
 
@@ -88,16 +87,16 @@ app.post('/api/persons', (request, response, next) => {
 
   // olion tallennus tietokantaan ja tuloksen palautus selaimelle
   person.save().then(savedPerson => {
-  response.json(savedPerson)
+    response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 // henkilön päivitys
 app.put('/api/persons/:id', (request, response, next) => {
-    const {name, number} = request.body
+  const { name, number } = request.body
 
-    Person.findById(request.params.id)
+  Person.findById(request.params.id)
     .then(person => {
       if (!person) {
         return response.status(404).end()
@@ -129,7 +128,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   }
   else if (error.name === 'ValidationError') {
-    return response.status(400).json({error: error.message})
+    return response.status(400).json({ error: error.message })
   }
   next(error)
 }
