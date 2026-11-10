@@ -4,15 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "node --test",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development node --watch index.js",
+    "test": "cross-env  NODE_ENV=test node --test",
     "lint": "eslint ."
   },
   "keywords": [],
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "cross-env": "^10.1.0",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
     "mongoose": "^9.12.0"
@@ -22,6 +23,6 @@
     "@stylistic/eslint-plugin-js": "^4.4.1",
     "eslint": "^10.14.0",
     "globals": "^17.14.0",
-    "nodemon": "^3.1.14"
+    "supertest": "^7.3.2"
   }
 }
