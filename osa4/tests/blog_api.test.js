@@ -4,29 +4,16 @@ const Blog = require('../models/blog')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const helper = require('./test_helper')
 
 const api = supertest(app)
 
-const initialBlogs = [
-  {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7
-  },
-  {
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5
-  }
-]
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
+  let blogObject = new Blog(helper.initialBlogs[0])
   await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
+  blogObject = new Blog(helper.initialBlogs[1])
   await blogObject.save()
 })
 
@@ -39,7 +26,7 @@ test('blogs are returned as json', async () => {
 
 test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs')
-  assert.strictEqual(response.body.length, initialBlogs.length)
+  assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
 test('a specific blog is within the returned blogs', async () => {
@@ -73,7 +60,7 @@ test('a valid blog can be added ', async () => {
 
   const titles = response.body.map(r => r.title)
 
-  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+  assert.strictEqual(response.body.length, helper.initialBlogs.length + 1)
 
   assert(titles.includes('Canonical string reduction'))
 })
@@ -122,6 +109,43 @@ test('if blog url is not added, returns 400 bad request', async () => {
     .post('/api/blogs')
     .send(newBlog)
     .expect(400)
+})
+
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  const titles = blogsAtEnd.map(n => n.id)
+  assert(!titles.includes(blogToDelete.id))
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+test('a blog can be updated', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const updatedBlogData = {
+    ...blogToUpdate,
+    likes: blogToUpdate.likes + 5
+  }
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlogData)
+    .expect(200)
+    .expect('Content-type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const updatedBlogFromDb = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+
+  assert.strictEqual(updatedBlogFromDb.likes, blogToUpdate.likes + 5)
 })
 
 after(async () => {
