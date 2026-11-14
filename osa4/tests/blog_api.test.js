@@ -10,14 +10,22 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
+let token = null
+
 
 beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
 
-  const passwordHash = await bcrypt.hash('secret', 10)
+  const passwordHash = await bcrypt.hash('salasana123', 10)
   const user = new User({ username: 'root', passwordHash })
   await user.save()
+
+  const response = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'salasana123' })
+
+  token = response.body.token
 
   for (let blog of helper.initialBlogs) {
     blog.user = user.id
@@ -61,6 +69,7 @@ test('a valid blog can be added ', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -74,6 +83,25 @@ test('a valid blog can be added ', async () => {
   assert(titles.includes('Canonical string reduction'))
 })
 
+test('returns 401 unauthorized if token is not provided', async () => {
+  const newBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  assert.strictEqual(response.body.length, helper.initialBlogs.length)
+})
+
 test('if likes is not set, it defaults to 0 ', async () => {
   const newBlog = {
     title: 'TDD harms architecture',
@@ -83,6 +111,7 @@ test('if likes is not set, it defaults to 0 ', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -103,6 +132,7 @@ test('if blog title is not added, returns 400 bad request', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 })
@@ -116,6 +146,7 @@ test('if blog url is not added, returns 400 bad request', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 })
@@ -126,6 +157,7 @@ test('a blog can be deleted', async () => {
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
 
   const blogsAtEnd = await helper.blogsInDb()

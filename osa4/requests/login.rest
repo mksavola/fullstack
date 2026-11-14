@@ -1,0 +1,44 @@
+post http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username": "hellas",
+    "password": "salasana123"
+}
+###
+post http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNmFmNGYyOTA2ZWQ3Y2UzOTBjZjY2NTJhIiwiaWF0IjoxNzk0NjgzNzg5fQ.zc-M3hqWB4YEXsQkjCzX0isnnKwXnIgNV4JHhxGJZ7g
+
+{
+  "title": "Testiblogi9",
+  "author": "Testaaja",
+  "url": "https://testi.com",
+  "likes": 2
+}
+###
+get http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNmFmNGYyOTA2ZWQ3Y2UzOTBjZjY2NTJhIiwiaWF0IjoxNzk0NjgzNzg5fQ.zc-M3hqWB4YEXsQkjCzX0isnnKwXnIgNV4JHhxGJZ7g
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "hellas10",
+  "name": "Arto Hellas",
+  "password": "salasana123"
+}
+###
+post http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username": "hellas10",
+    "password": "salasana123"
+}
+
+###
+DELETE http://localhost:3003/api/blogs/6af8cf034db489c8a8b83272
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNmFmNGYyOTA2ZWQ3Y2UzOTBjZjY2NTJhIiwiaWF0IjoxNzk0NjkwNzk4LCJleHAiOjE3OTQ2OTQzOTh9.eeFjerfRhRn-ibsQuv3qRT-adnrkiY4XopO2-qT7QcI
